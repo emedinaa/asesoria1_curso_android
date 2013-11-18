@@ -1,12 +1,18 @@
 package es.emedinaa.appasesoriaandroid;
 
+import java.util.List;
+
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -33,9 +39,48 @@ public class HomeActivity extends Activity implements LocationListener{
 	{
 		//location_isil();
 		//routing(); //posición fija 
-		routingMyLocation(); //desde mi ubicación hasta la ISIL
+		//routingMyLocation(); //desde mi ubicación hasta la ISIL
+		shareFacebook();
 
 	}
+	private void shareFacebook() {
+		
+		
+		
+		// TODO Auto-generated method stub
+	/*	Intent intent=new Intent(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		//intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+
+		// Add data to the intent, the receiving app will decide what to do with it.
+		//intent.putExtra(Intent.EXTRA_SUBJECT, "Some Subject Line");
+		intent.putExtra(Intent.EXTRA_SUBJECT, "Title Of The Post");
+		intent.putExtra(Intent.EXTRA_TEXT, "https://google.com.pe");
+
+		startActivity(Intent.createChooser(intent, "Hola Mobile ISIL"));
+		*/
+		
+		Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+		shareIntent.setType("text/plain");
+		shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Extra subject");
+		shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Extra text");
+		PackageManager pm = getApplicationContext().getPackageManager();
+		List<ResolveInfo> activityList = pm.queryIntentActivities(shareIntent, 0);
+		
+		for (final ResolveInfo app : activityList) 
+		{
+			if ((app.activityInfo.name).contains("facebook")) 
+			{
+				final ActivityInfo activity = app.activityInfo;
+				final ComponentName name = new ComponentName(activity.applicationInfo.packageName, activity.name);
+				shareIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+				shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+				shareIntent.setComponent(name);
+				startActivity(shareIntent);
+			}
+		}
+	}
+
 	private void routingMyLocation()
 	{
 		Location loc= mylocation();
